@@ -35,11 +35,6 @@ O alfabeto da nossa linguagem, inclui:
 
 ## Definição de Tokens  
 
-### ➿ Identificadores  
-- Forma: **letra** ou `_` inicial, seguidos de letras, dígitos ou `_`.  
-- Exemplos: `jogador1`, `vida_total`, `Pontuacao`.  
-- Case-sensitive (ou seja, `vida` ≠ `Vida`).  
-
 ### ➿ Literais Numéricos  
 - **Inteiros**: `0 – 9`, permitindo números com diversas casas (exemplo: 0, 30, 100, 4000).  
 - **Decimais**: `3.14`, `0.5`.
