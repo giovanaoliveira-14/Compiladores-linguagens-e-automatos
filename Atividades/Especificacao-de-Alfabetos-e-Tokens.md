@@ -109,7 +109,7 @@ inicio
 fim
 ```
 
-#### Exemplo 3 — Sistema simples de colisão e pontuação 
+#### Exemplo 3 — Por enquanto
 
 ```csharp
 
