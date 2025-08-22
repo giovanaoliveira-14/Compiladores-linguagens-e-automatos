@@ -1,108 +1,131 @@
 # 📘 Especificação Inicial da Linguagem — Semana 2  
 *(Linguagem Educacional para Jogos)*  
 
-## 🔤 1. Alfabeto da Linguagem (Σ)  
-O alfabeto inclui:  
+## Alfabeto da Linguagem
+O alfabeto da nossa linguagem, inclui:  
 - **Letras**: a–z, A–Z (inclui acentuação para permitir palavras em português: á, é, í, ó, ú, ç).  
-- **Dígitos**: 0–9.  
-- **Símbolos de pontuação e operadores**:  
-  `{ } ( ) [ ] ; , . " ' + - * / % = == != < <= > >= && || !`  
-- **Espaços em branco**: espaço, tabulação, quebra de linha.  
-- **Símbolos especiais para jogos**: `→` (movimento), `↑`, `↓`, `←`.  
+- **Dígitos**:
+    - Inteiros: 0 – 9
+    - Flutuantes: [0-9]+\.[0-9]+
 
-👉 **Decisão pedagógica**: permitir acentos e nomes em português (como `personagem`, `inimigo`, `pontuação`) para aproximar da ideia do **Portugol**.  
+- **Símbolos especiais**:  
+    - Operadores: `+ - * / % = == != < > <= >=`
+    - Caracteres especiais: 
+    `{ } ( ) [ ] ; , . " '` 
 
+- **Formatação**:  
+    - Espaço em branco: (` `)
+    - Quebra de linha: (`\ql`)
+
+- **Movimentação do jogo**:
+    - `↑`, `←`, `↓`, `→`
+    - `w (cima)`, `a (esquerda)`, `s (baixo)`, `d (direita)`
+
+- **Case-sensitive**:  **SIM**, nosso alfabeto terá validação para identificar letras maiúsculas e minúsculas, permitindo que se assemelhe ao máximo com uma linguagem de fácil entedimento.
+
+- **Comentários**:
+    - Comentário de uma linha:
+        - `–> comentário`
+    - Comentário de várias linhas (em bloco):
+        - ```
+            –> comentário
+            comentário <--
+            ```
 ---
 
-## 📝 2. Definição de Tokens  
+## Definição de Tokens  
 
-### 🔹 Identificadores  
+### ➿ Identificadores  
 - Forma: **letra** ou `_` inicial, seguidos de letras, dígitos ou `_`.  
 - Exemplos: `jogador1`, `vida_total`, `Pontuacao`.  
 - Case-sensitive (ou seja, `vida` ≠ `Vida`).  
 
-### 🔹 Literais Numéricos  
-- **Inteiros**: `0`, `42`, `1000`.  
-- **Decimais**: `3.14`, `0.5`.  
-- **Notação científica**: `1.5e3`.  
+### ➿ Literais Numéricos  
+- **Inteiros**: `0 – 9`, permitindo números com diversas casas (exemplo: 0, 30, 100, 4000).  
+- **Decimais**: `3.14`, `0.5`.
 
-### 🔹 Literais de Texto (strings)  
-- Entre aspas duplas: `"Você venceu!"`.  
-- Suporta caracteres especiais: `\n` (nova linha), `\t` (tabulação).  
+### ➿ Literais de Texto (strings)  
+- As strings serão identicadas quando a palavra se encontrar entre um conjunto de aspas duplas (`"Isso é uma string!"`).
+- Os textos suportam o uso de caracteres especiais.
+- Suporta comentários.
+- Suporta o uso de caracteres especiais para criação de nova linha, espaços, etc. (`\ql`)
 
-### 🔹 Operadores  
+### ➿ Operadores  
 - Aritméticos: `+`, `-`, `*`, `/`, `%`.  
 - Relacionais: `==`, `!=`, `<`, `<=`, `>`, `>=`.  
 - Lógicos: `&&`, `||`, `!`.  
-- Especiais para jogos:  
-  - `→` (mover para direita), `↑`, `↓`, `←`.  
-  - Ex.: `mover jogador → 10`.  
 
-### 🔹 Palavras-chave  
-Inspiradas em Portugol e C#, mas simplificadas para clareza:  
-- Controle de fluxo: `se`, `senao`, `enquanto`, `para`.  
-- Estruturas: `funcao`, `inicio`, `fim`, `classe`, `objeto`.  
-- Jogos: `criar`, `mover`, `colidir`, `pontuar`, `som`.  
-- Outros: `inteiro`, `decimal`, `texto`, `retorne`.  
+### ➿ Palavras reservadas  
+As palavras reservadas da nossa linguagem adotarão uma estrutura de fácil compreensão, com o objetivo de atender desenvolvedores iniciantes voltados ao desenvolvimento de jogos.
 
-### 🔹 Comentários  
-- Linha única: `// comentário`.  
-- Bloco: `/* comentário */`.  
+- Controle de fluxo e estrutura:
+```
+talvez se -> if
+então talvez   seja -> else if
+então será -> else
+por enquanto -> while
+receba -> return
+criar -> function
+inteiro -> int
+flutuante -> float
+boleano -> boolean
+texto -> string
+falso -> false
+verdadeiro -> true
+imprima -> print
+chega -> break
+para cada -> for
+switch -> escolha
+case -> se for
+```  
 
----
+### Exemplo de uso
 
-## 🌐 3. Estrutura Léxica Geral  
-- **Case-sensitive** para maior precisão.  
-- **Espaços em branco** e quebras de linha são ignorados, exceto dentro de strings.  
-- **Tokens de jogos** dão um diferencial pedagógico: comandos curtos e diretos para ações.  
-
----
-
-## 📊 4. Exemplos Concretos de Programa  
-
-### Exemplo 1 — Olá, jogo!  
+#### Exemplo 1 — Texto  
 
 ```csharp
 inicio
-    texto mensagem = "Bem-vindo ao jogo!";
-    mostrar(mensagem);
+
+    texto mensagem = "Bem-vindo ao nosso jogo!";
+    imprima(mensagem);
 fim
+
 ```
 
-### Exemplo 2 — Movimento de personagem  
+#### Exemplo 2 — Soma
 
 ```csharp
 inicio
-    inteiro x = 0;
-    mover jogador → 5; // jogador anda 5 unidades para a direita
-    mover jogador ↑ 3; // jogador sobe 3 unidades
+
+    criar maiorNumero (inteiro a, inteiro b) {
+        talvez se (a > b) {
+            mensagem = "O número " + a + "é maior";
+        } então talvez (b > a) {
+            mensagem = "O número " + b + "é maior";
+        } então será {
+            mensagem = "Os números são iguais!";
+        }
+
+        receba mensagem;
+    }
+
+    imprima(maiorNumero(10, 9));
+
 fim
 ```
 
-### Exemplo 3 — Sistema simples de colisão e pontuação 
+#### Exemplo 3 — Sistema simples de colisão e pontuação 
 
 ```csharp
-inicio
-    inteiro pontos = 0;
-    criar jogador em (0,0);
-    criar inimigo em (5,0);
 
-    se colidir(jogador, inimigo) entao
-        pontos = pontos + 10;
-        mostrar("Você ganhou " + pontos + " pontos!");
-    fimse
-fim
+inteiro soma = 200;
+
+por enquanto (verdadeiro) {
+  talvez se (soma > 100) {
+	imprima(soma);
+  } então será {
+	soma = soma + 1;
+  }
+}
+
 ```
-
-
----
-
-## 📔 5. Diário de Decisões de Design  
-1. **Acentos permitidos** para aproximar da língua nativa (ex.: `pontuação`).  
-2. **Tokens de jogos pré-configurados** (como `mover`, `colidir`, `pontuar`) para resultados rápidos em simulações visuais.  
-3. **Case-sensitive** para preparar alunos para linguagens de mercado como C#.  
-4. **Operadores gráficos (→, ↑, ↓, ←)** como “açúcar sintático”, facilitando a intuição espacial em jogos.  
-5. **Strings simples**, sem interpolação inicial, para manter a curva de aprendizado suave.  
-6. **Identificadores não podem começar por número**, para evitar ambiguidade com literais.  
-
----
