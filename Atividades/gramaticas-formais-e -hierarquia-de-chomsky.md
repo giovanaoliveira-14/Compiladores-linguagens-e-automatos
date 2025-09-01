@@ -67,7 +67,7 @@ T = { Armazene, recebendo, Imprima, Criar, Fim, Talvez, Se, Então, talvez, Ent�
     
 *   ListaArgumentos → Expressao | Expressao , ListaArgumentos
     
-S = < programa >
+*   S = < programa >
 
 
 ## Classificação na Hierarquia de Chomsky
@@ -139,6 +139,7 @@ A divisão entre o que é de responsabilidade da **sintaxe** e o que é de respo
 
 **1\. Problema do “Dangling-Else”**
 
+```
 Se condicao1 Então
 
     Talvez Se condicao2 Então
@@ -150,6 +151,7 @@ Então Será   # A qual Se/Talvez Se pertence?
     comando2
 
 Fim
+```
 
 **Solução:** Regra de associação — Então Será sempre se associa ao Se ou Talvez Se mais próximo não pareado.
 
@@ -177,14 +179,12 @@ Fim
 *   Operadores lógicos: associativos à esquerda
     
 *   Comparações: não associativas 
-    
-
-
 
 **Exemplos de Derivação**
 
 **Programa:**
 
+```
 Armazene Inteiro pontuacao recebendo 85
 
 Se pontuacao >= 100 Então
@@ -196,6 +196,7 @@ Senao
     Imprima "Continue tentando"
 
 Fim
+```
 
 **Derivação:**
 
@@ -308,21 +309,25 @@ Fim  
 
 Inclui recursos prontos para jogos, permitindo resultados visuais imediatos:
 
+```
 Mover personagem para cima  
 
 Se personagem colidir com inimigo Então  
 
     Imprima "Game Over"  
 
-Fim  
+Fim 
+```
 
 3\. Sistema de Mutabilidade Explícita
 
 Por padrão, variáveis são constantes (imutáveis). O programador precisa declarar explicitamente quando algo pode mudar.
 
+```
 Guarde Inteiro 10 como constante      # imutável  
 
 Guarde mutável Inteiro 3 como vidas   # mutável  
+```
 
 4\. Regras de Identificadores
 
@@ -345,37 +350,45 @@ Regras adicionais:
 
 Exemplos válidos:
 
+```
 pontuacao
 
 vidasRestantes
 
 jogador\_1\_nome\_temporario
+```
 
 Exemplos inválidos:
 
+```
 Pontuacao         # começa com maiúscula  
 
 vidas-restantes   # contém caractere especial (-)  
 
-jogador nome      # contém espaço  
+jogador nome      # contém espaço
+```
 
 5\. Estruturas Verbosas, mas Claras
 
 Comandos são escritos de forma detalhada para aumentar a compreensão.
 
+```
 ParaCada Inteiro i de 1 até 5  
 
     Imprima "Rodada:", i  
 
 Fim  
+```
 
 6\. Funções Nativas Educacionais
 
 A linguagem oferece funções simples para entrada e conversão de dados:
 
+```
 nome = leia\_entrada()  
 
 idade = para\_inteiro(leia\_entrada())  
+```
 
 
 **Validação/Teste e Análise de Erros Sintáticos**
@@ -385,6 +398,7 @@ idade = para\_inteiro(leia\_entrada())  
 **Uso correto do condicional**
 ------------------------------
 
+```
 Guarde mutável Inteiro 85 como pontuacao  
 
 Se pontuacao >= 100 Então  
@@ -396,6 +410,7 @@ Senão  
     Imprima "Continue tentando"  
 
 Fim  
+```
 
 1.  **Laço com fechamento adequado**
     
@@ -953,9 +968,11 @@ Fim  
 A linguagem oferece funções simples para entrada e conversão de dados:
 
 
+```
 nome = leia\_entrada()  
 
 idade = para\_inteiro(leia\_entrada())  
+```
 
 ***
 
