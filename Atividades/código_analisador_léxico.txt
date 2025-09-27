@@ -1,0 +1,118 @@
+import java.util.*;
+import java.util.regex.*;
+
+class Token {
+    private final String lexema;
+    private final String tipo;
+    private final int linha;
+    private final int coluna;
+
+    public Token(String lexema, String tipo, int linha, int coluna) {
+        this.lexema = lexema;
+        this.tipo = tipo;
+        this.linha = linha;
+        this.coluna = coluna;
+    }
+
+    public String getLexema() { return lexema; }
+    public String getTipo() { return tipo; }
+    public int getLinha() { return linha; }
+    public int getColuna() { return coluna; }
+
+    @Override
+    public String toString() {
+        return String.format("%-15s | %-15s (linha %d, col %d)", lexema, tipo, linha, coluna);
+    }
+}
+
+class Lexer {
+    private final List<Token> tokens = new ArrayList<>();
+    private final List<String> erros = new ArrayList<>();
+    private final LinkedHashMap<Pattern, String> regras = new LinkedHashMap<>();
+
+    public Lexer() {
+        // Palavras-chave
+        regras.put(Pattern.compile("^(Programa|Armazene|Guarde|mutável|Inteiro|Se|Então|Senão|Fim|ParaCada|Imprima|leia_entrada|para_inteiro|E|Ou|Não)"), "PALAVRA_CHAVE");
+        // Identificadores
+        regras.put(Pattern.compile("^([a-z][a-zA-Z0-9]*|_[a-z0-9_]+)"), "IDENTIFICADOR");
+        // Números inteiros
+        regras.put(Pattern.compile("^(\\d+)"), "NUMERO");
+        // Strings
+        regras.put(Pattern.compile("^\"(?:[^\"\\\\]|\\\\.)*\""), "STRING");
+        // Operadores relacionais
+        regras.put(Pattern.compile("^(==|!=|<=|>=|<|>)"), "OP_REL");
+        // Operadores aritméticos
+        regras.put(Pattern.compile("^[+\\-*/]"), "OP_ARIT");
+        // Delimitadores e símbolos
+        regras.put(Pattern.compile("^[\\[\\]\\(\\)\\{\\},:]"), "DELIMITADOR");
+    }
+
+    public void analisar(String codigo) {
+        String[] linhas = codigo.split("\n");
+        for (int i = 0; i < linhas.length; i++) {
+            String linha = linhas[i];
+            int numLinha = i + 1;
+            int col = 1;
+
+            while (!linha.isEmpty()) {
+                linha = linha.stripLeading();
+                boolean reconhecido = false;
+
+                for (var entry : regras.entrySet()) {
+                    Matcher m = entry.getKey().matcher(linha);
+                    if (m.find()) {
+                        String lexema = m.group();
+                        tokens.add(new Token(lexema, entry.getValue(), numLinha, col));
+                        linha = linha.substring(lexema.length());
+                        col += lexema.length();
+                        reconhecido = true;
+                        break;
+                    }
+                }
+
+                if (!reconhecido) {
+                    char c = linha.charAt(0);
+                    erros.add("Erro léxico na linha " + numLinha + ", coluna " + col + ": caractere inválido '" + c + "'");
+                    linha = linha.substring(1);
+                    col++;
+                }
+            }
+        }
+    }
+
+    public void imprimirTokens() {
+        System.out.println("TOKEN           | TIPO");
+        System.out.println("----------------+----------------------");
+        for (Token t : tokens) {
+            System.out.printf("%-15s | %-15s\n", t.getLexema(), t.getTipo());
+        }
+    }
+
+    public void imprimirErros() {
+        if (!erros.isEmpty()) {
+            System.out.println("\n=== ERROS LÉXICOS ===");
+            for (String e : erros) {
+                System.out.println(e);
+            }
+        }
+    }
+}
+
+public class LexerOnline {
+    public static void main(String[] args) {
+        // Aqui você pode colar seu código para testar
+        String codigo = """
+        Programa
+        Se x <= 10 Então
+            Imprima "Você venceu"
+        Fim
+        """;
+
+        Lexer lexer = new Lexer();
+        lexer.analisar(codigo);
+        lexer.imprimirTokens();
+        lexer.imprimirErros();
+    }
+}
+
+
