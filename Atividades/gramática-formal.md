@@ -1,159 +1,140 @@
-**Definição formal da gramática**
+# Definição formal da gramática
 
-G = (V, Σ, P, S)
+**G = (V, Σ, P, S)**
 
-onde:
+---
 
-**V (variáveis / não-terminais):**
+## Variáveis / Não-terminais (V)
 
-{Programa, Declaracao, Bloco, Comando, Expressao, Termo, Fator, Condicao, Tipo, Ident, Numero, StringLiteral, OperadorRelacional, OperadorLogico, OperadorAritmetico}
+```
+{ Programa, Declaracao, Bloco, Comando, Expressao, Termo, Fator, Condicao, Tipo, Ident, Numero, StringLiteral, OperadorRelacional, OperadorLogico, OperadorAritmetico }
+```
 
-**Σ (terminais):**
+---
+
+## Terminais (Σ)
 
 Palavras reservadas, símbolos e identificadores:
 
-{Se, Fim, Imprima, E, Ou, Não, inteiro, texto, verdadeiro, falso, "(", ")", "{", "}", ",", ";", "=", "+", "-", "\*", "/", ">", "<", ">=", "<=", "==", "!=", Ident, Numero, String}
+```
+{ Se, Fim, Imprima, E, Ou, Não, inteiro, texto, verdadeiro, falso, "(", ")", "{", "}", ",", ";", "=", "+", "-", "*", "/", ">", "<", ">=", "<=", "==", "!=", Ident, Numero, String }
+```
 
-**P (Conjunto de Produções):**
+---
 
-São as regras de substituição que definem como as sentenças da linguagem podem ser formadas. Cada produção tem a forma A → α, onde A ∈ V e α ∈ (V ∪ Σ)\*.
+## Conjunto de Produções (P)
 
-**S (símbolo inicial):**
+São as regras de substituição que definem como as sentenças da linguagem podem ser formadas.  
+Cada produção tem a forma **A → α**, onde **A ∈ V** e **α ∈ (V ∪ Σ)\***.
 
+---
+
+## Símbolo inicial (S)
+
+```
 Programa
+```
 
-**Gramática em EBNF (Extended Backus–Naur Form)**
+---
 
-Programa        = { Declaracao } "Fim" .
+# Gramática em EBNF (Extended Backus–Naur Form)
 
-Declaracao      = "inteiro" Ident ";"
+```ebnf
+Programa        = { Declaracao } "Fim" .
 
-                 | "texto" Ident ";"
+Declaracao      = "inteiro" Ident ";"
+                 | "texto" Ident ";"
+                 | Bloco .
 
-                 | Bloco .
+Bloco           = "{" { Comando } "}" .
 
-Bloco           = "{" { Comando } "}" .
+Comando         = "Se" "(" Condicao ")" Bloco
+                 | "Imprima" "(" Expressao ")" ";"
+                 | Ident "=" Expressao ";"
+                 | Bloco .
 
-Comando         = "Se" "(" Condicao ")" Bloco
-
-                 | "Imprima" "(" Expressao ")" ";"
-
-                 | Ident "=" Expressao ";"
-
-                 | Bloco .
-
-Condicao        = Expressao OperadorRelacional Expressao
-
-                 | "Não" "(" Condicao ")"
-
-                 | Condicao OperadorLogico Condicao .
+Condicao        = Expressao OperadorRelacional Expressao
+                 | "Não" "(" Condicao ")"
+                 | Condicao OperadorLogico Condicao .
 
 OperadorRelacional = ">" | "<" | ">=" | "<=" | "==" | "!=" .
+OperadorLogico     = "E" | "Ou" .
+OperadorAritmetico = "+" | "-" | "*" | "/" .
 
-OperadorLogico     = "E" | "Ou" .
+Expressao       = Termo { ("+" | "-") Termo } .
+Termo           = Fator { ("*" | "/") Fator } .
 
-OperadorAritmetico = "+" | "-" | "\*" | "/" .
+Fator           = Ident
+                 | Numero
+                 | StringLiteral
+                 | "verdadeiro"
+                 | "falso"
+                 | "(" Expressao ")" .
 
-Expressao       = Termo { ("+" | "-") Termo } .
+Ident           = letra { letra | digito | "_" } .
+Numero          = digito { digito } .
+StringLiteral   = '"' { caractere } '"' .
 
-Termo           = Fator { ("\*" | "/") Fator } .
+letra           = "A" | "B" | ... | "Z" | "a" | "b" | ... | "z" .
+digito          = "0" | "1" | ... | "9" .
+caractere       = qualquer caractere imprimível exceto aspas duplas.
+```
 
-Fator           = Ident
+---
 
-                 | Numero
+# Gramática em BNF (Backus–Naur Form)
 
-                 | StringLiteral
+```bnf
+<Programa>           ::= <DeclaracaoSeq> "Fim"
 
-                 | "verdadeiro"
+<DeclaracaoSeq>      ::= <Declaracao> <DeclaracaoSeq> | ε
 
-                 | "falso"
+<Declaracao>         ::= "inteiro" <Ident> ";"
+                       | "texto" <Ident> ";"
+                       | <Bloco>
 
-                 | "(" Expressao ")" .
+<Bloco>              ::= "{" <ComandoSeq> "}"
 
-Ident           = letra { letra | digito | "\_" } .
+<ComandoSeq>         ::= <Comando> <ComandoSeq> | ε
 
-Numero          = digito { digito } .
+<Comando>            ::= "Se" "(" <Condicao> ")" <Bloco>
+                       | "Imprima" "(" <Expressao> ")" ";"
+                       | <Ident> "=" <Expressao> ";"
+                       | <Bloco>
 
-StringLiteral   = '"' { caractere } '"' .
+<Condicao>           ::= <Expressao> <OperadorRelacional> <Expressao>
+                       | "Não" "(" <Condicao> ")"
+                       | <Condicao> <OperadorLogico> <Condicao>
 
-letra           = "A" | "B" | ... | "Z" | "a" | "b" | ... | "z" .
+<OperadorRelacional> ::= ">" | "<" | ">=" | "<=" | "==" | "!="
+<OperadorLogico>     ::= "E" | "Ou"
+<OperadorAritmetico> ::= "+" | "-" | "*" | "/"
 
-digito          = "0" | "1" | ... | "9" .
+<Expressao>          ::= <Termo> <ExpressaoTail>
+                       | "-" <Termo> <ExpressaoTail>
 
-caractere       = qualquer caractere imprimível exceto aspas duplas.
+<ExpressaoTail>      ::= <OperadorAritmetico> <Termo> <ExpressaoTail> | ε
 
-**Gramática em BNF (Backus–Naur Form)**
+<Termo>              ::= <Fator> <TermoTail>
+<TermoTail>          ::= ("*" | "/") <Fator> <TermoTail> | ε
 
-          ::= "Fim"
+<Fator>              ::= <Ident>
+                       | <Numero>
+                       | <StringLiteral>
+                       | "verdadeiro"
+                       | "falso"
+                       | "(" <Expressao> ")"
 
-      ::= | ε
+<Ident>              ::= <letra> <IdentTail>
+<IdentTail>          ::= (<letra> | <digito> | "_") <IdentTail> | ε
 
-        ::= "inteiro" ";"
+<Numero>             ::= <digito> <NumeroTail>
+<NumeroTail>         ::= <digito> <NumeroTail> | ε
 
-                       | "texto" ";"
+<StringLiteral>      ::= '"' <Caracteres> '"'
+<Caracteres>         ::= <caractere> <Caracteres> | ε
 
-                       |
-
-              ::= "{" "}"
-
-        ::= | ε
-
-            ::= "Se" "(" ")"
-
-                       | "Imprima" "(" ")" ";"
-
-                       | "=" ";"
-
-                       |
-
-          ::=
-
-                       | "Não" "(" ")"
-
-                       |
-
-::= ">" | "<" | ">=" | "<=" | "==" | "!="
-
-    ::= "E" | "Ou"
-
-::= "+" | "-" | "\*" | "/"
-
-          ::=
-
-                       | "-"
-
-      ::= | ε
-
-              ::=
-
-          ::= ("\*" | "/") | ε
-
-              ::=
-
-                       |
-
-                       |
-
-                       | "verdadeiro"
-
-                       | "falso"
-
-                       | "(" ")"
-
-              ::=
-
-          ::= ( | | "\_") | ε
-
-            ::=
-
-        ::= | ε
-
-      ::= '"' '"'
-
-        ::= | ε
-
-              ::= "A" | ... | "Z" | "a" | ... | "z"
-
-            ::= "0" | ... | "9"
-
-          ::= qualquer caractere imprimível exceto aspas duplas
+<letra>              ::= "A" | ... | "Z" | "a" | ... | "z"
+<digito>             ::= "0" | ... | "9"
+<caractere>          ::= qualquer caractere imprimível exceto aspas duplas
+```
