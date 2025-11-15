@@ -72,7 +72,8 @@ class Token {
 
     @Override
     public String toString() {
-        return String.format("%-15s | %-15s (linha %d, col %d)", lexema, tipo, linha, coluna);
+        return String.format("%-15s | %-15s (linha %d, col %d)", 
+                lexema, tipo, linha, coluna);
     }
 }
 
@@ -82,23 +83,14 @@ class Lexer {
     private final List<String> erros = new ArrayList<>();
 
     public Lexer() {
-        // Palavras-chave
         regras.put(Pattern.compile("^(Programa|Armazene|Guarde|mutável|Inteiro|Se|Então|Senão|Fim|ParaCada|Imprima|leia_entrada|para_inteiro)"), "PALAVRA_CHAVE");
-        // Operadores lógicos
         regras.put(Pattern.compile("^(E|Ou|Não)"), "OP_LOGICO");
-        // Identificadores
         regras.put(Pattern.compile("^([a-z][a-zA-Z0-9]*|_[a-z0-9_]+)"), "IDENTIFICADOR");
-        // Números inteiros
         regras.put(Pattern.compile("^(\\d+)"), "NUMERO");
-        // Strings
         regras.put(Pattern.compile("^\"(?:[^\"\\\\]|\\\\.)*\""), "STRING");
-        // Operadores relacionais
         regras.put(Pattern.compile("^(==|!=|<=|>=|<|>)"), "OP_REL");
-        // Operadores aritméticos
         regras.put(Pattern.compile("^[+\\-*/]"), "OP_ARIT");
-        // Delimitadores
         regras.put(Pattern.compile("^[\\[\\]\\(\\)\\{\\},:]"), "DELIMITADOR");
-        // Espaços e comentários (ignorar)
         regras.put(Pattern.compile("^\\s+"), "IGNORADO");
         regras.put(Pattern.compile("^#.*"), "IGNORADO");
     }
@@ -115,7 +107,6 @@ class Lexer {
                 boolean reconhecido = false;
                 Token tokenMaisLongo = null;
 
-                // MAXIMAL MUNCH: procura o token mais longo que casa
                 for (var entry : regras.entrySet()) {
                     Matcher m = entry.getKey().matcher(buffer);
                     if (m.find()) {
@@ -152,15 +143,35 @@ class Lexer {
     public List<String> getErros() { return erros; }
 
     public void imprimirTokens() { tokens.forEach(System.out::println); }
-    public void imprimirErros() { 
-        if (!erros.isEmpty()) { 
-            System.out.println("\n=== ERROS LÉXICOS ==="); 
-            erros.forEach(System.out::println); 
-        } 
+    public void imprimirErros() {
+        if (!erros.isEmpty()) {
+            System.out.println("\n=== ERROS LÉXICOS ===");
+            erros.forEach(System.out::println);
+        }
     }
 }
 
-// Parser simples de demonstração
+
+class Node {
+    String tipo;
+    List<Node> filhos = new ArrayList<>();
+
+    public Node(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public void addFilho(Node n) {
+        filhos.add(n);
+    }
+
+    public void imprimir(String indent) {
+        System.out.println(indent + tipo);
+        for (Node f : filhos) {
+            f.imprimir(indent + "  ");
+        }
+    }
+}
+
 class Parser {
     private final List<Token> tokens;
     private int pos = 0;
@@ -169,32 +180,95 @@ class Parser {
         this.tokens = tokens;
     }
 
-    private Token peek() { return pos < tokens.size() ? tokens.get(pos) : null; }
-    private Token next() { return pos < tokens.size() ? tokens.get(pos++) : null; }
+    private Token peek() {
+        return pos < tokens.size() ? tokens.get(pos) : null;
+    }
 
-    // Exemplo: reconhece uma declaração simples: PALAVRA_CHAVE IDENTIFICADOR '=' NUMERO
-    public void analisar() {
+    private Token next() {
+        return pos < tokens.size() ? tokens.get(pos++) : null;
+    }
+
+    public Node analisar() {
+        Node raiz = new Node("Programa");
+
         while (peek() != null) {
-            Token t = next();
-            if (t.tipo.equals("PALAVRA_CHAVE") && t.lexema.equals("Inteiro")) {
-                Token id = next();
-                Token op = next();
-                Token num = next();
+            Token t = peek();
 
-                if (id != null && id.tipo.equals("IDENTIFICADOR") &&
-                    op != null && op.lexema.equals("=") &&
-                    num != null && num.tipo.equals("NUMERO")) {
-
-                    System.out.println("Declaração válida: " + id.lexema + " = " + num.lexema);
-                } else {
-                    System.out.println("Erro sintático próximo de linha " + t.linha);
-                }
+            if (t.lexema.equals("Inteiro")) {
+                raiz.addFilho(parseDeclaracao());
+            }
+            else if (t.lexema.equals("Se")) {
+                raiz.addFilho(parseIf());
+            }
+            else {
+                next(); // Ignora tokens inesperados
             }
         }
+
+        return raiz;
+    }
+
+    private Node parseDeclaracao() {
+        Token tipo = next();
+        Token id = next();
+        Token op = next();
+        Token num = next();
+
+        Node decl = new Node("Declaração");
+        decl.addFilho(new Node("Tipo: " + tipo.lexema));
+        decl.addFilho(new Node("Identificador: " + id.lexema));
+
+        Node atrib = new Node("Atribuição");
+        atrib.addFilho(new Node("Número: " + num.lexema));
+
+        decl.addFilho(atrib);
+
+        return decl;
+    }
+
+    private Node parseIf() {
+        next(); // "Se"
+
+        Token id = next();
+        Token op = next();
+        Token num = next();
+        Token entao = next();
+
+        Node noIf = new Node("Se");
+
+        Node cond = new Node("Condição");
+        cond.addFilho(new Node("Identificador: " + id.lexema));
+        cond.addFilho(new Node("Operador: " + op.lexema));
+        cond.addFilho(new Node("Número: " + num.lexema));
+
+        noIf.addFilho(cond);
+
+        Node corpo = new Node("Corpo");
+        while (peek() != null && !peek().lexema.equals("Fim")) {
+            if (peek().lexema.equals("Imprima")) {
+                corpo.addFilho(parseImprima());
+            } else {
+                next();
+            }
+        }
+
+        if (peek() != null && peek().lexema.equals("Fim")) next();
+
+        noIf.addFilho(corpo);
+        return noIf;
+    }
+
+    private Node parseImprima() {
+        next(); // Imprimir
+        Token str = next();
+
+        Node n = new Node("Imprima");
+        n.addFilho(new Node("String: " + str.lexema));
+
+        return n;
     }
 }
 
-// Testando
 public class Main {
     public static void main(String[] args) {
         String codigo = """
@@ -208,14 +282,17 @@ public class Main {
         Lexer lexer = new Lexer();
         lexer.analisar(codigo);
 
-        System.out.println("=== TOKENS ===");
+        System.out.println(" TOKENS");
         lexer.imprimirTokens();
         lexer.imprimirErros();
 
-        System.out.println("\n=== PARSER ===");
         Parser parser = new Parser(lexer.getTokens());
-        parser.analisar();
+        Node arvore = parser.analisar();
+
+        System.out.println("\n ÁRVORE SINTÁTICA");
+        arvore.imprimir("");
     }
 }
+
 
 
