@@ -1,0 +1,31 @@
+main:
+        push    rax
+        mov     dword ptr [rsp + 4], 10
+        mov     dword ptr [rsp], 20
+        mov     esi, dword ptr [rsp + 4]
+        add     esi, dword ptr [rsp]
+        lea     rdi, [rip + .L.fmt_int]
+        mov     al, 0
+        call    printf@PLT
+        mov     eax, dword ptr [rsp + 4]
+        cmp     eax, dword ptr [rsp]
+        jge     .LBB0_2
+        lea     rdi, [rip + .L.str0]
+        call    puts@PLT
+        jmp     .LBB0_3
+.LBB0_2:
+        lea     rdi, [rip + .L.str1]
+        call    puts@PLT
+.LBB0_3:
+        xor     eax, eax
+        pop     rcx
+        ret
+
+.L.fmt_int:
+        .asciz  "%d\n"
+
+.L.str0:
+        .asciz  "a menor"
+
+.L.str1:
+        .asciz  "a nao menor"
