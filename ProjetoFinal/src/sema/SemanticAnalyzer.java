@@ -10,19 +10,27 @@ public class SemanticAnalyzer {
 
     private final Map<String, FunctionSig> functions = new HashMap<>();
 
-    public void visit(ASTProgram prog){
-        
-        for(ASTNode n : prog.functions){
-            if (!(n instanceof ASTFunction)) throw new RuntimeException("Top-level node deve ser funcao");
-            ASTFunction f = (ASTFunction)n;
-            if (functions.containsKey(f.name)) throw new RuntimeException("Funcao duplicada: " + f.name);
-            functions.put(f.name, new FunctionSig(f.returnType, f.params));
-        }
-       
-        if (!functions.containsKey("main")) throw new RuntimeException("Funcao main faltando");
-       
-        for(ASTNode n : prog.functions){ analyzeFunction((ASTFunction)n); }
+   public void visit(ASTProgram prog){
+
+    for (ASTNode n : prog.declarations){
+        if (!(n instanceof ASTFunction))
+            throw new RuntimeException("Top-level node deve ser funcao");
+
+        ASTFunction f = (ASTFunction)n;
+        if (functions.containsKey(f.name))
+            throw new RuntimeException("Funcao duplicada: " + f.name);
+
+        functions.put(f.name, new FunctionSig(f.returnType, f.params));
     }
+
+    if (!functions.containsKey("main"))
+        throw new RuntimeException("Funcao main faltando");
+
+    for (ASTNode n : prog.declarations){
+        analyzeFunction((ASTFunction)n);
+    }
+}
+
 
     private void analyzeFunction(ASTFunction fn){
         Map<String, Symbol> sym = new HashMap<>();
