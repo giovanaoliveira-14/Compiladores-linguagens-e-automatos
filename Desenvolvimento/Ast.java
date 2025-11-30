@@ -191,11 +191,11 @@ public class Ast {
             String endLabel = newLabel();
 
             out.println("  br i1 " + condI1 + ", label %" + thenLabel + ", label %" + elseLabel);
-            // then
+          
             out.println(thenLabel + ":");
             for (Stmt st : is.thenBlock) emitStmt(st);
             out.println("  br label %" + endLabel);
-            // else
+          
             out.println(elseLabel + ":");
             if (is.elseBlock != null) {
                 for (Stmt st : is.elseBlock) emitStmt(st);
